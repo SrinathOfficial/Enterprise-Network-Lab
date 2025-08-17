@@ -1,0 +1,37 @@
+en
+conf t
+int g0/0
+no shutdown
+int g0/0.10
+encapsulation dot1Q 10
+ip address 192.168.1.1 255.255.255.248
+ip helper-address 10.10.1.2
+exit
+int g0/0.20
+encapsulation dot1Q 20
+ip address 192.168.2.1 255.255.255.248
+ip helper-address 10.10.1.2
+exit
+int g0/2
+ip address 10.10.1.1 255.255.255.252
+no shutdown
+
+exit
+access-list 1 permit 192.168.1.0 0.0.0.7
+access-list 1 permit 192.168.2.0 0.0.0.7
+exit
+
+conf t
+ip nat inside source list 1 interface g0/1 overload
+interface g0/0.10
+ip nat inside
+interface g0/0.20
+ip nat inside
+interface g0/2
+ip nat inside
+interface g0/1
+ip nat outside
+exit
+ip route 0.0.0.0 0.0.0.0 200.1.1.1
+end
+
